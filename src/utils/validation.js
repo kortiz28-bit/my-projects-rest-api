@@ -6,7 +6,6 @@ const idParamSchema = z
   .regex(/^\d+$/, 'ID must be a positive integer.')
   .transform((value) => Number(value))
   .refine((value) => Number.isSafeInteger(value) && value > 0, {
-    error: 'ID must be a positive integer.',
   })
 
 const projectCreateSchema = z.strictObject({
