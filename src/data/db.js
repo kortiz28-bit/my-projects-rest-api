@@ -5,6 +5,8 @@ export function getDB(connection) {
   return drizzle(connection, { schema })
 }
 
+export const getDb = getDB
+
 export function nowIso() {
   return new Date().toISOString()
 }
