@@ -12,12 +12,32 @@ import { sendError } from './utils/response.js'
 const app = new Hono()
 const api = new Hono()
 
+app.use('*', async (c, next) => {
+  c.set('traceId', crypto.randomUUID())
+  await next()
+})
+
 app.use(
   rateLimiter({
     binding: (c) => c.env.AUTH_LIMITER,
     keyGenerator: (c) => c.req.header('cf-connecting-ip') ?? '',
+    message: (c) => {
+      return {
+        error: {
+          code: 'TOO_MANY_REQUESTS',
+          message: 'Too many requests, please try again later.',
+          details: [],
+          trace_id: c.get('traceId'),
+        },
+      }
+    },
   }),
 )
+
+app.use('*', async (c, next) => {
+  c.set('traceId', crypto.randomUUID())
+  await next()
+})
 
 app.use('*', async (c, next) => {
   c.set('traceId', crypto.randomUUID())
